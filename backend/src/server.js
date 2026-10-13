@@ -11,20 +11,17 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
-    // Check if tables exist, if not, auto-initialize
     try {
       await db.query('SELECT 1 FROM classes LIMIT 1;');
     } catch (checkErr) {
-      console.log('⚡ First-time startup detected. Initializing database schema and seed data...');
       await initializeDatabase();
     }
 
     app.listen(PORT, () => {
-      console.log(`🚀 Attendance Backend Server running on http://localhost:${PORT}`);
-      console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }

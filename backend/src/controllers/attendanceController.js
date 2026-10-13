@@ -1,15 +1,10 @@
 const db = require('../config/db');
 
-/**
- * GET /api/attendance?classId=&date=
- * Fetch saved attendance for the given class and date
- */
 async function getAttendance(req, res, next) {
   try {
     const classId = req.parsedClassId;
     const date = req.parsedDate;
 
-    // Check if class exists
     const classCheck = await db.query(
       'SELECT id, name, code FROM classes WHERE id = $1;',
       [classId]
@@ -24,8 +19,6 @@ async function getAttendance(req, res, next) {
 
     const currentClass = classCheck.rows[0];
 
-    // Fetch all students of this class along with their attendance for this specific date
-    // Note: attendance_date in DB is formatted as YYYY-MM-DD
     const queryText = `
       SELECT 
         s.id AS "studentId",
@@ -46,7 +39,6 @@ async function getAttendance(req, res, next) {
     const result = await db.query(queryText, [classId, date]);
     const records = result.rows;
 
-    // Calculate summary statistics
     const totalStudents = records.length;
     let presentCount = 0;
     let absentCount = 0;
@@ -84,17 +76,12 @@ async function getAttendance(req, res, next) {
   }
 }
 
-/**
- * POST /api/attendance
- * Bulk create or update attendance for students on a given date
- */
 async function saveAttendance(req, res, next) {
   try {
     const classId = req.parsedClassId;
     const date = req.parsedDate;
     const records = req.sanitizedRecords;
 
-    // 1. Verify class exists
     const classCheck = await db.query(
       'SELECT id, name, code FROM classes WHERE id = $1;',
       [classId]
@@ -107,14 +94,12 @@ async function saveAttendance(req, res, next) {
       });
     }
 
-    // 2. Fetch all student IDs belonging to this class to verify relationship
     const classStudentsResult = await db.query(
       'SELECT id FROM students WHERE class_id = $1;',
       [classId]
     );
     const validStudentIds = new Set(classStudentsResult.rows.map((s) => s.id));
 
-    // 3. Check for any foreign students that do not belong to this class
     for (const rec of records) {
       if (!validStudentIds.has(rec.studentId)) {
         return res.status(400).json({
@@ -124,7 +109,6 @@ async function saveAttendance(req, res, next) {
       }
     }
 
-    // 4. Perform atomic UPSERT inside a transaction
     const upsertResults = await db.transaction(async (client) => {
       const saved = [];
       const upsertSql = `
@@ -147,7 +131,6 @@ async function saveAttendance(req, res, next) {
       return saved;
     });
 
-    // 5. Compute summary of saved records
     let presentCount = 0;
     let absentCount = 0;
     for (const item of upsertResults) {

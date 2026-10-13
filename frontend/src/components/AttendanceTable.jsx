@@ -73,7 +73,6 @@ export default function AttendanceTable({
           </p>
         </div>
 
-        {/* Live Search Filter */}
         <div className="relative w-full sm:w-60">
           <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -109,7 +108,6 @@ export default function AttendanceTable({
                 key={student.studentId}
                 className="p-3 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-gray-50/70 transition-colors bg-white"
               >
-                {/* Student Details */}
                 <div className="flex items-center space-x-3">
                   <div className="w-7 h-7 rounded bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-semibold text-black">
                     {index + 1}
@@ -148,9 +146,7 @@ export default function AttendanceTable({
                   </div>
                 </div>
 
-                {/* Status Action Buttons */}
                 <div className="flex items-center gap-1.5 self-end sm:self-center">
-                  {/* Present Button */}
                   <button
                     type="button"
                     onClick={() => onStatusChange(student.studentId, 'Present')}
@@ -164,7 +160,6 @@ export default function AttendanceTable({
                     Present
                   </button>
 
-                  {/* Absent Button */}
                   <button
                     type="button"
                     onClick={() => onStatusChange(student.studentId, 'Absent')}

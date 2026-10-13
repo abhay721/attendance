@@ -1,11 +1,6 @@
-/**
- * Centralized Error Handling Middleware
- */
-
 function errorHandler(err, req, res, next) {
-  console.error(' [Error]', err);
+  console.error('[Error]', err);
 
-  // PostgreSQL unique violation error code
   if (err.code === '23505') {
     return res.status(409).json({
       success: false,
@@ -14,7 +9,6 @@ function errorHandler(err, req, res, next) {
     });
   }
 
-  // PostgreSQL foreign key violation error code
   if (err.code === '23503') {
     return res.status(400).json({
       success: false,

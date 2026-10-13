@@ -1,7 +1,3 @@
-/**
- * API service client for Attendance Management
- */
-
 const API_BASE = '/api';
 
 export async function fetchClasses() {

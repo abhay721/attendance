@@ -28,7 +28,6 @@ export default function FilterControls({
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 mb-5 shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4 border-b border-gray-100">
-        {/* Class Selector */}
         <div>
           <label
             htmlFor="class-selector"
@@ -54,7 +53,6 @@ export default function FilterControls({
           </select>
         </div>
 
-        {/* Date Selector */}
         <div>
           <label
             htmlFor="date-selector"
@@ -73,9 +71,7 @@ export default function FilterControls({
         </div>
       </div>
 
-      {/* Action Bar & Quick Actions */}
       <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        {/* Status indicator on reopening */}
         <div className="flex items-center gap-2">
           {isReopenedSaved ? (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-gray-100 text-black border border-gray-200">
@@ -96,7 +92,6 @@ export default function FilterControls({
           )}
         </div>
 
-        {/* Quick Actions Buttons & Save Button */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"

@@ -1,15 +1,9 @@
-/**
- * Validation helper utilities and middleware for attendance management
- */
-
-// Helper: check if a value is a valid positive integer
 function isValidPositiveInt(val) {
   if (val === undefined || val === null || val === '') return false;
   const num = Number(val);
   return Number.isInteger(num) && num > 0;
 }
 
-// Helper: validate date string (YYYY-MM-DD) and ensure it's a real calendar date
 function isValidDateString(dateStr) {
   if (typeof dateStr !== 'string') return false;
   const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -25,7 +19,6 @@ function isValidDateString(dateStr) {
   );
 }
 
-// Validate params for GET /api/classes/:id/students
 function validateClassIdParam(req, res, next) {
   const { id } = req.params;
   if (!isValidPositiveInt(id)) {
@@ -38,7 +31,6 @@ function validateClassIdParam(req, res, next) {
   next();
 }
 
-// Validate query for GET /api/attendance?classId=&date=
 function validateAttendanceQuery(req, res, next) {
   const { classId, date } = req.query;
 
@@ -75,7 +67,6 @@ function validateAttendanceQuery(req, res, next) {
   next();
 }
 
-// Validate payload for POST /api/attendance
 function validateAttendancePayload(req, res, next) {
   const { classId, date, records } = req.body;
 
@@ -163,7 +154,6 @@ function validateAttendancePayload(req, res, next) {
       });
     }
 
-    // Deduplicate within the same payload: latest record wins
     const studentIdNum = parseInt(rec.studentId, 10);
     sanitizedRecords.push({
       studentId: studentIdNum,
@@ -172,7 +162,6 @@ function validateAttendancePayload(req, res, next) {
     seenStudentIds.add(studentIdNum);
   }
 
-  // De-duplicate if same studentId appears multiple times in the payload
   const deduplicated = [];
   const processed = new Set();
   for (let i = sanitizedRecords.length - 1; i >= 0; i--) {

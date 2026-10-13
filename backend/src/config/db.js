@@ -6,14 +6,13 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 let pool = null;
 let pgliteInstance = null;
-let dbMode = null; // 'pg' or 'pglite'
+let dbMode = null;
 
 async function getDb() {
   if (dbMode) {
     return { mode: dbMode, pool, pglite: pgliteInstance };
   }
 
-  // Check if external PostgreSQL connection is configured
   const hasPgConfig = process.env.DATABASE_URL || (process.env.PGHOST && process.env.PGDATABASE);
 
   if (hasPgConfig) {
@@ -30,50 +29,43 @@ async function getDb() {
           };
 
       const testPool = new Pool(config);
-      // Verify connection
       const client = await testPool.connect();
       client.release();
       pool = testPool;
       dbMode = 'pg';
-      console.log(' Connected to external PostgreSQL database via pg pool.');
       return { mode: 'pg', pool };
     } catch (err) {
-      console.warn(' External PostgreSQL connection failed:', err.message);
-      console.warn(' Falling back to embedded PostgreSQL (PGlite)...');
+      console.warn('External PostgreSQL connection failed:', err.message);
     }
   }
 
-  // Fallback / Default: Embedded PGlite (Real Postgres WASM with persistent disk storage)
   const { PGlite } = require('@electric-sql/pglite');
-  const dataDir = process.env.PGLITE_DATA_DIR || path.join(__dirname, '../../.pglite_data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+  const dataDir = process.env.PGLITE_DATA_DIR;
+  if (!dataDir) {
+    const defaultDir = path.join(__dirname, '../../.pglite_data');
+    if (!fs.existsSync(defaultDir)) {
+      fs.mkdirSync(defaultDir, { recursive: true });
+    }
+    pgliteInstance = new PGlite(defaultDir);
+  } else if (dataDir === 'memory://') {
+    pgliteInstance = new PGlite();
+  } else {
+    pgliteInstance = new PGlite(dataDir);
   }
-
-  pgliteInstance = new PGlite(dataDir);
   dbMode = 'pglite';
-  console.log(` Initialized embedded PostgreSQL (PGlite) engine at ${dataDir}`);
   return { mode: 'pglite', pglite: pgliteInstance };
 }
 
-/**
- * Execute a parameterized SQL query
- */
 async function query(text, params = []) {
   const { mode, pool: pgPool, pglite } = await getDb();
 
   if (mode === 'pg') {
-    const res = await pgPool.query(text, params);
-    return res;
+    return await pgPool.query(text, params);
   } else {
-    const res = await pglite.query(text, params);
-    return res;
+    return await pglite.query(text, params);
   }
 }
 
-/**
- * Execute a transaction safely with BEGIN / COMMIT / ROLLBACK
- */
 async function transaction(callback) {
   const { mode, pool: pgPool, pglite } = await getDb();
 
@@ -91,7 +83,6 @@ async function transaction(callback) {
       client.release();
     }
   } else {
-    // PGlite supports transactions via .transaction() or manual queries
     if (typeof pglite.transaction === 'function') {
       return await pglite.transaction(async (tx) => {
         return await callback(tx);
@@ -110,9 +101,6 @@ async function transaction(callback) {
   }
 }
 
-/**
- * Execute a multi-statement SQL script (for schemas and migrations)
- */
 async function exec(text) {
   const { mode, pool: pgPool, pglite } = await getDb();
 

@@ -1,9 +1,5 @@
 const db = require('../config/db');
 
-/**
- * GET /api/classes
- * Fetch all available classes for dropdown selection
- */
 async function getAllClasses(req, res, next) {
   try {
     const result = await db.query(
@@ -18,15 +14,10 @@ async function getAllClasses(req, res, next) {
   }
 }
 
-/**
- * GET /api/classes/:id/students
- * Fetch all students belonging to the specified class
- */
 async function getStudentsByClass(req, res, next) {
   try {
     const classId = req.parsedClassId;
 
-    // Check if the class exists
     const classCheck = await db.query(
       'SELECT id, name, code FROM classes WHERE id = $1;',
       [classId]
@@ -41,7 +32,6 @@ async function getStudentsByClass(req, res, next) {
 
     const currentClass = classCheck.rows[0];
 
-    // Fetch students for the class
     const studentsResult = await db.query(
       'SELECT id, name, roll_number, class_id FROM students WHERE class_id = $1 ORDER BY roll_number ASC, id ASC;',
       [classId]

@@ -10,7 +10,6 @@ import {
   saveAttendance,
 } from './services/api';
 
-// Helper to format date as YYYY-MM-DD
 function getTodayString() {
   const now = new Date();
   const year = now.getFullYear();
@@ -32,7 +31,6 @@ export default function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [alert, setAlert] = useState(null);
 
-  // Load all classes on initial mount
   useEffect(() => {
     async function loadClasses() {
       setIsLoadingClasses(true);
@@ -40,7 +38,6 @@ export default function App() {
         const classList = await fetchClasses();
         setClasses(classList);
         if (classList.length > 0) {
-          // Pre-select the first class for immediate usability
           setSelectedClassId(classList[0].id.toString());
         }
       } catch (err) {
@@ -56,7 +53,6 @@ export default function App() {
     loadClasses();
   }, []);
 
-  // Fetch attendance whenever selectedClassId or selectedDate changes
   const loadClassAttendance = useCallback(async (classId, date) => {
     if (!classId || !date) return;
 
@@ -69,7 +65,7 @@ export default function App() {
         studentId: r.studentId,
         name: r.name,
         rollNumber: r.rollNumber,
-        status: r.status, // 'Present', 'Absent', or null
+        status: r.status,
         updatedAt: r.updatedAt,
       }));
 
@@ -100,12 +96,10 @@ export default function App() {
     }
   }, [selectedClassId, selectedDate, loadClassAttendance]);
 
-  // Handle single student status change
   const handleStatusChange = (studentId, newStatus) => {
     setStudents((prev) =>
       prev.map((s) => {
         if (s.studentId === studentId) {
-          // If clicked again on the same status, keep it or toggle
           return { ...s, status: newStatus };
         }
         return s;
@@ -113,7 +107,6 @@ export default function App() {
     );
   };
 
-  // Quick Action: Mark All Present
   const handleMarkAllPresent = () => {
     setStudents((prev) =>
       prev.map((s) => ({
@@ -123,7 +116,6 @@ export default function App() {
     );
   };
 
-  // Quick Action: Mark All Absent
   const handleMarkAllAbsent = () => {
     setStudents((prev) =>
       prev.map((s) => ({
@@ -133,7 +125,6 @@ export default function App() {
     );
   };
 
-  // Quick Action: Clear Selection
   const handleClearSelection = () => {
     setStudents((prev) =>
       prev.map((s) => ({
@@ -143,13 +134,11 @@ export default function App() {
     );
   };
 
-  // Calculate if changes were made compared to initial fetched state
   const isDirty =
     students.length > 0 &&
     JSON.stringify(students.map((s) => ({ id: s.studentId, status: s.status }))) !==
       JSON.stringify(initialStudentsState.map((s) => ({ id: s.studentId, status: s.status })));
 
-  // Save Attendance Handler
   const handleSaveAttendance = async () => {
     if (!selectedClassId || !selectedDate) {
       setAlert({
@@ -167,7 +156,6 @@ export default function App() {
       return;
     }
 
-    // Check for unmarked students
     const unmarkedStudents = students.filter((s) => !s.status);
     if (unmarkedStudents.length > 0) {
       const confirmSave = window.confirm(
@@ -178,7 +166,6 @@ export default function App() {
         return;
       }
 
-      // Automatically default remaining unmarked students to Absent
       const completeStudents = students.map((s) => ({
         ...s,
         status: s.status || 'Absent',
@@ -210,7 +197,6 @@ export default function App() {
         message: `Attendance successfully saved for ${res.data?.totalSaved || records.length} students on ${selectedDate}!`,
       });
 
-      // Reload fresh state to synchronize timestamps and state
       await loadClassAttendance(selectedClassId, selectedDate);
     } catch (err) {
       setAlert({
@@ -231,7 +217,6 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5">
         <AlertBanner alert={alert} onDismiss={() => setAlert(null)} />
 
-        {/* Filter Controls (Class, Date & Quick Actions) */}
         <FilterControls
           classes={classes}
           selectedClassId={selectedClassId}
@@ -248,13 +233,11 @@ export default function App() {
           isReopenedSaved={isReopenedSaved}
         />
 
-        {/* Stretch Goal: Summary Cards */}
         <SummaryCards
           students={students}
           isReopenedSaved={isReopenedSaved}
         />
 
-        {/* Student Attendance List */}
         <AttendanceTable
           students={students}
           onStatusChange={handleStatusChange}

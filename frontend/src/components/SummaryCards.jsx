@@ -28,7 +28,6 @@ export default function SummaryCards({ students = [], isReopenedSaved = false })
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Total Students */}
         <div className="bg-white p-3.5 rounded-lg border border-gray-200 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-gray-500">Total Students</p>
@@ -39,7 +38,6 @@ export default function SummaryCards({ students = [], isReopenedSaved = false })
           </div>
         </div>
 
-        {/* Present Count */}
         <div className="bg-white p-3.5 rounded-lg border border-gray-200 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-gray-500">Present</p>
@@ -50,7 +48,6 @@ export default function SummaryCards({ students = [], isReopenedSaved = false })
           </div>
         </div>
 
-        {/* Absent Count */}
         <div className="bg-white p-3.5 rounded-lg border border-gray-200 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-gray-500">Absent</p>
@@ -61,7 +58,6 @@ export default function SummaryCards({ students = [], isReopenedSaved = false })
           </div>
         </div>
 
-        {/* Attendance Rate */}
         <div className="bg-white p-3.5 rounded-lg border border-gray-200 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-gray-500">Attendance Rate</p>

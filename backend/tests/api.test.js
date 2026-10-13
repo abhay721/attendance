@@ -1,3 +1,5 @@
+process.env.PGLITE_DATA_DIR = 'memory://';
+
 const { test, describe, before } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
@@ -6,7 +8,6 @@ const { initializeDatabase } = require('../src/db/initDb');
 
 describe('Attendance Management API Endpoints & Edge Cases', () => {
   before(async () => {
-    // Ensure clean database state before running tests
     await initializeDatabase();
   });
 
@@ -64,7 +65,6 @@ describe('Attendance Management API Endpoints & Edge Cases', () => {
 
   describe('GET /api/attendance', () => {
     test('returns saved attendance when reopening class and date with records', async () => {
-      // 2026-10-12 was seeded in seed.sql
       const res = await request(app).get('/api/attendance?classId=1&date=2026-10-12');
       assert.equal(res.status, 200);
       assert.equal(res.body.success, true);
@@ -148,7 +148,6 @@ describe('Attendance Management API Endpoints & Edge Cases', () => {
       assert.equal(res.body.data.presentCount, 6);
       assert.equal(res.body.data.absentCount, 2);
 
-      // Verify persistence via GET
       const getRes = await request(app).get(`/api/attendance?classId=1&date=${testDate}`);
       assert.equal(getRes.status, 200);
       assert.equal(getRes.body.data.summary.presentCount, 6);
@@ -156,7 +155,6 @@ describe('Attendance Management API Endpoints & Edge Cases', () => {
     });
 
     test('reopening and editing attendance updates existing rows without duplicates (UPSERT Requirement)', async () => {
-      // Modify student 3 from Absent to Present, and student 1 from Present to Absent
       const updatePayload = {
         classId: 1,
         date: testDate,
@@ -176,10 +174,9 @@ describe('Attendance Management API Endpoints & Edge Cases', () => {
       assert.equal(res.status, 200);
       assert.equal(res.body.success, true);
 
-      // Fetch again to verify updated values and no duplicate rows
       const getRes = await request(app).get(`/api/attendance?classId=1&date=${testDate}`);
       assert.equal(getRes.status, 200);
-      assert.equal(getRes.body.data.records.length, 8); // Still exactly 8 students!
+      assert.equal(getRes.body.data.records.length, 8);
       
       const student1 = getRes.body.data.records.find((r) => r.studentId === 1);
       const student3 = getRes.body.data.records.find((r) => r.studentId === 3);
@@ -210,7 +207,6 @@ describe('Attendance Management API Endpoints & Edge Cases', () => {
     });
 
     test('returns 400 when student does not belong to the selected class (Edge Case: cross-class security check)', async () => {
-      // Student ID 9 belongs to Class 2, but request specifies Class 1
       const res = await request(app).post('/api/attendance').send({
         classId: 1,
         date: testDate,
