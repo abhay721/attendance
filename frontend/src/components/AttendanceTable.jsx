@@ -11,23 +11,23 @@ export default function AttendanceTable({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+      <div className="bg-white rounded-lg border border-gray-200 p-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-slate-200 rounded w-1/4"></div>
-          <div className="space-y-3">
+          <div className="h-5 bg-gray-200 rounded w-1/4"></div>
+          <div className="space-y-2.5">
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="h-16 bg-slate-100 rounded-xl flex items-center justify-between p-4"
+                className="h-14 bg-gray-100 rounded-lg flex items-center justify-between p-3"
               >
-                <div className="flex items-center space-x-4 w-1/3">
-                  <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
-                  <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                <div className="flex items-center space-x-3 w-1/3">
+                  <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                  <div className="space-y-1.5 flex-1">
+                    <div className="h-3.5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-2.5 bg-gray-200 rounded w-1/2"></div>
                   </div>
                 </div>
-                <div className="h-9 bg-slate-200 rounded-lg w-40"></div>
+                <div className="h-8 bg-gray-200 rounded w-36"></div>
               </div>
             ))}
           </div>
@@ -38,12 +38,12 @@ export default function AttendanceTable({
 
   if (students.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center shadow-sm">
-        <div className="w-14 h-14 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <User className="w-7 h-7" />
+      <div className="bg-white rounded-lg border border-dashed border-gray-300 p-10 text-center">
+        <div className="w-12 h-12 bg-gray-100 text-black rounded-lg flex items-center justify-center mx-auto mb-3">
+          <User className="w-6 h-6" />
         </div>
-        <h3 className="text-base font-bold text-slate-800">No Students Found</h3>
-        <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+        <h3 className="text-sm font-bold text-black">No Students Found</h3>
+        <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
           {selectedClass
             ? `There are no students enrolled in ${selectedClass.name}.`
             : 'Please select a class above to view students and mark attendance.'}
@@ -62,31 +62,31 @@ export default function AttendanceTable({
   });
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white">
         <div>
-          <h3 className="text-sm font-bold text-slate-800">
+          <h3 className="text-sm font-bold text-black">
             Student Roster ({students.length})
           </h3>
-          <p className="text-xs text-slate-500">
-            Click Present or Absent for each student
+          <p className="text-xs text-gray-500">
+            Select Present or Absent for each student
           </p>
         </div>
 
         {/* Live Search Filter */}
-        <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full sm:w-60">
+          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search student or roll no..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+            className="w-full pl-8 pr-7 py-1 text-xs bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:border-black focus:ring-1 focus:ring-black outline-none"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-black"
             >
               ✕
             </button>
@@ -95,11 +95,11 @@ export default function AttendanceTable({
       </div>
 
       {filteredStudents.length === 0 ? (
-        <div className="p-8 text-center text-sm text-slate-500">
+        <div className="p-8 text-center text-xs text-gray-500 bg-white">
           No students match "{searchQuery}"
         </div>
       ) : (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-gray-100 bg-white">
           {filteredStudents.map((student, index) => {
             const isPresent = student.status === 'Present';
             const isAbsent = student.status === 'Absent';
@@ -107,36 +107,22 @@ export default function AttendanceTable({
             return (
               <div
                 key={student.studentId}
-                className={`p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors hover:bg-slate-50/70 ${
-                  isPresent
-                    ? 'bg-emerald-50/20'
-                    : isAbsent
-                    ? 'bg-rose-50/20'
-                    : ''
-                }`}
+                className="p-3 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-gray-50/70 transition-colors bg-white"
               >
                 {/* Student Details */}
-                <div className="flex items-center space-x-3.5">
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-colors ${
-                      isPresent
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                        : isAbsent
-                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                        : 'bg-slate-100 text-slate-600 border border-slate-200'
-                    }`}
-                  >
+                <div className="flex items-center space-x-3">
+                  <div className="w-7 h-7 rounded bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-semibold text-black">
                     {index + 1}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-slate-900">
+                      <span className="text-sm font-semibold text-black">
                         {student.name}
                       </span>
                       {student.updatedAt && (
                         <span
                           title={`Last updated: ${new Date(student.updatedAt).toLocaleString()}`}
-                          className="inline-flex items-center text-[10px] text-slate-400"
+                          className="inline-flex items-center text-[10px] text-gray-400 font-mono"
                         >
                           <Clock className="w-2.5 h-2.5 mr-0.5" />
                           Saved
@@ -144,16 +130,16 @@ export default function AttendanceTable({
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs font-mono font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                      <span className="text-xs font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
                         {student.rollNumber}
                       </span>
                       <span
-                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                        className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${
                           isPresent
-                            ? 'bg-emerald-50 text-emerald-700'
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                             : isAbsent
-                            ? 'bg-rose-50 text-rose-700'
-                            : 'bg-slate-100 text-slate-500'
+                            ? 'bg-rose-50 text-rose-800 border border-rose-200'
+                            : 'bg-gray-100 text-gray-600 border border-gray-200'
                         }`}
                       >
                         {isPresent ? 'Present' : isAbsent ? 'Absent' : 'Unmarked'}
@@ -163,20 +149,18 @@ export default function AttendanceTable({
                 </div>
 
                 {/* Status Action Buttons */}
-                <div className="flex items-center gap-2 self-end sm:self-center">
+                <div className="flex items-center gap-1.5 self-end sm:self-center">
                   {/* Present Button */}
                   <button
                     type="button"
                     onClick={() => onStatusChange(student.studentId, 'Present')}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+                    className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-colors ${
                       isPresent
-                        ? 'bg-emerald-600 text-white shadow-emerald-200 ring-2 ring-emerald-600 ring-offset-1'
-                        : 'bg-white text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200'
+                        ? 'bg-emerald-600 text-white border border-emerald-600'
+                        : 'bg-white text-gray-700 hover:text-black hover:border-gray-400 border border-gray-300'
                     }`}
                   >
-                    <Check
-                      className={`w-3.5 h-3.5 ${isPresent ? 'text-white' : 'text-emerald-500'}`}
-                    />
+                    <Check className={`w-3.5 h-3.5 ${isPresent ? 'text-white' : 'text-emerald-600'}`} />
                     Present
                   </button>
 
@@ -184,15 +168,13 @@ export default function AttendanceTable({
                   <button
                     type="button"
                     onClick={() => onStatusChange(student.studentId, 'Absent')}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+                    className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-colors ${
                       isAbsent
-                        ? 'bg-rose-600 text-white shadow-rose-200 ring-2 ring-rose-600 ring-offset-1'
-                        : 'bg-white text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 hover:border-rose-200'
+                        ? 'bg-rose-600 text-white border border-rose-600'
+                        : 'bg-white text-gray-700 hover:text-black hover:border-gray-400 border border-gray-300'
                     }`}
                   >
-                    <X
-                      className={`w-3.5 h-3.5 ${isAbsent ? 'text-white' : 'text-rose-500'}`}
-                    />
+                    <X className={`w-3.5 h-3.5 ${isAbsent ? 'text-white' : 'text-rose-600'}`} />
                     Absent
                   </button>
                 </div>

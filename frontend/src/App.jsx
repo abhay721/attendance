@@ -225,10 +225,10 @@ export default function App() {
   const currentClass = classes.find((c) => c.id.toString() === selectedClassId);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
+    <div className="min-h-screen bg-white text-black pb-16">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5">
         <AlertBanner alert={alert} onDismiss={() => setAlert(null)} />
 
         {/* Filter Controls (Class, Date & Quick Actions) */}

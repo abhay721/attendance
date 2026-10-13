@@ -9,21 +9,21 @@ export default function AlertBanner({ alert, onDismiss }) {
   const configs = {
     success: {
       bgColor: 'bg-emerald-50',
-      borderColor: 'border-emerald-200',
-      textColor: 'text-emerald-800',
-      icon: <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />,
+      borderColor: 'border-emerald-300',
+      textColor: 'text-emerald-950',
+      icon: <CheckCircle2 className="w-4 h-4 text-emerald-700 flex-shrink-0" />,
     },
     error: {
       bgColor: 'bg-rose-50',
-      borderColor: 'border-rose-200',
-      textColor: 'text-rose-800',
-      icon: <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />,
+      borderColor: 'border-rose-300',
+      textColor: 'text-rose-950',
+      icon: <AlertCircle className="w-4 h-4 text-rose-700 flex-shrink-0" />,
     },
     info: {
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      textColor: 'text-blue-800',
-      icon: <Info className="w-5 h-5 text-blue-600 flex-shrink-0" />,
+      bgColor: 'bg-gray-50',
+      borderColor: 'border-gray-300',
+      textColor: 'text-black',
+      icon: <Info className="w-4 h-4 text-black flex-shrink-0" />,
     },
   };
 
@@ -31,12 +31,12 @@ export default function AlertBanner({ alert, onDismiss }) {
 
   return (
     <div
-      className={`rounded-xl border p-4 mb-6 flex items-start justify-between gap-3 shadow-sm transition-all duration-200 ${current.bgColor} ${current.borderColor}`}
+      className={`rounded-lg border p-3 mb-4 flex items-start justify-between gap-2.5 transition-all ${current.bgColor} ${current.borderColor}`}
       role="alert"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5">
         {current.icon}
-        <div className={`text-sm font-medium ${current.textColor} leading-5`}>
+        <div className={`text-xs sm:text-sm font-medium ${current.textColor} leading-snug`}>
           {message}
         </div>
       </div>
@@ -44,10 +44,10 @@ export default function AlertBanner({ alert, onDismiss }) {
         <button
           onClick={onDismiss}
           type="button"
-          className={`p-1 rounded-lg transition-colors hover:bg-black/5 ${current.textColor}`}
+          className="p-1 rounded hover:bg-black/5 text-gray-500 hover:text-black transition-colors"
           aria-label="Dismiss alert"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
       )}
     </div>
