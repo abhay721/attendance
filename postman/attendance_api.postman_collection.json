@@ -1,0 +1,275 @@
+{
+  "info": {
+    "_postman_id": "c85d71c2-9e8a-4d91-82bf-793540228ea1",
+    "name": "Leaplooms Attendance Management API",
+    "description": "Postman API Collection for Leaplooms Technologies Full Stack Attendance Management System (Week 2 Assignment). Includes happy paths, edge cases, bulk upsert, and validation tests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "System Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Verifies that the backend server is online and healthy."
+      }
+    },
+    {
+      "name": "Classes",
+      "item": [
+        {
+          "name": "Get All Classes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/classes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "classes"]
+            },
+            "description": "Returns list of available classes for class dropdown."
+          }
+        },
+        {
+          "name": "Get Students by Class (Class 1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/classes/1/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "classes", "1", "students"]
+            },
+            "description": "Fetches all students enrolled in Class 1 (Grade 10 - Section A)."
+          }
+        },
+        {
+          "name": "Get Students for Empty Class (Class 3)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/classes/3/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "classes", "3", "students"]
+            },
+            "description": "Edge Case: Returns empty array [] for class with zero enrolled students."
+          }
+        },
+        {
+          "name": "Get Students - Invalid Class ID (400 Bad Request)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/classes/abc/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "classes", "abc", "students"]
+            },
+            "description": "Edge Case: Non-numeric class ID returns 400 Bad Request."
+          }
+        },
+        {
+          "name": "Get Students - Class Not Found (404 Not Found)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/classes/9999/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "classes", "9999", "students"]
+            },
+            "description": "Edge Case: Non-existent class ID returns 404 Not Found."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Get Saved Attendance (Reopen Class 1 on 2026-10-12)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance?classId=1&date=2026-10-12",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"],
+              "query": [
+                {
+                  "key": "classId",
+                  "value": "1"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-10-12"
+                }
+              ]
+            },
+            "description": "Fetches previously saved attendance for Class 1 on 2026-10-12 including summary metrics."
+          }
+        },
+        {
+          "name": "Get Unmarked Attendance (Date without records)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance?classId=1&date=2026-01-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"],
+              "query": [
+                {
+                  "key": "classId",
+                  "value": "1"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-01-01"
+                }
+              ]
+            },
+            "description": "Returns students with null status for a date where attendance was not yet saved."
+          }
+        },
+        {
+          "name": "Bulk Save Attendance (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classId\": 1,\n  \"date\": \"2026-10-15\",\n  \"records\": [\n    { \"studentId\": 1, \"status\": \"Present\" },\n    { \"studentId\": 2, \"status\": \"Present\" },\n    { \"studentId\": 3, \"status\": \"Absent\" },\n    { \"studentId\": 4, \"status\": \"Present\" },\n    { \"studentId\": 5, \"status\": \"Present\" },\n    { \"studentId\": 6, \"status\": \"Absent\" },\n    { \"studentId\": 7, \"status\": \"Present\" },\n    { \"studentId\": 8, \"status\": \"Present\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"]
+            },
+            "description": "Bulk saves attendance for all students of a class in a single atomic request."
+          }
+        },
+        {
+          "name": "Reopen & Update Attendance (UPSERT Safety)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classId\": 1,\n  \"date\": \"2026-10-15\",\n  \"records\": [\n    { \"studentId\": 1, \"status\": \"Absent\" },\n    { \"studentId\": 2, \"status\": \"Absent\" },\n    { \"studentId\": 3, \"status\": \"Present\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"]
+            },
+            "description": "Updates existing records safely without creating duplicate rows."
+          }
+        },
+        {
+          "name": "Edge Case: Missing Query Parameters (400 Bad Request)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"]
+            },
+            "description": "Missing classId or date returns 400 Bad Request with descriptive error."
+          }
+        },
+        {
+          "name": "Edge Case: Invalid Date Format (400 Bad Request)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance?classId=1&date=invalid-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"],
+              "query": [
+                {
+                  "key": "classId",
+                  "value": "1"
+                },
+                {
+                  "key": "date",
+                  "value": "invalid-date"
+                }
+              ]
+            },
+            "description": "Malformed date returns 400 Bad Request."
+          }
+        },
+        {
+          "name": "Edge Case: Invalid Status in Payload (400 Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classId\": 1,\n  \"date\": \"2026-10-15\",\n  \"records\": [\n    { \"studentId\": 1, \"status\": \"Late\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"]
+            },
+            "description": "Status other than 'Present' or 'Absent' is rejected with 400 Bad Request."
+          }
+        },
+        {
+          "name": "Edge Case: Student Not in Class (400 Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classId\": 1,\n  \"date\": \"2026-10-15\",\n  \"records\": [\n    { \"studentId\": 9, \"status\": \"Present\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance"]
+            },
+            "description": "Student belonging to Class 2 passed to Class 1 is rejected to protect class boundary."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Check, X, User, Clock, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, X, User, Clock, Search } from 'lucide-react';
 
 export default function AttendanceTable({
   students = [],
@@ -7,6 +7,8 @@ export default function AttendanceTable({
   isLoading,
   selectedClass,
 }) {
+  const [searchQuery, setSearchQuery] = useState('');
+
   if (isLoading) {
     return (
       <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
@@ -50,9 +52,18 @@ export default function AttendanceTable({
     );
   }
 
+  const filteredStudents = students.filter((s) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(query) ||
+      s.rollNumber.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
         <div>
           <h3 className="text-sm font-bold text-slate-800">
             Student Roster ({students.length})
@@ -61,106 +72,135 @@ export default function AttendanceTable({
             Click Present or Absent for each student
           </p>
         </div>
-      </div>
 
-      <div className="divide-y divide-slate-100">
-        {students.map((student, index) => {
-          const isPresent = student.status === 'Present';
-          const isAbsent = student.status === 'Absent';
-          const isUnmarked = !isPresent && !isAbsent;
-
-          return (
-            <div
-              key={student.studentId}
-              className={`p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors hover:bg-slate-50/70 ${
-                isPresent
-                  ? 'bg-emerald-50/20'
-                  : isAbsent
-                  ? 'bg-rose-50/20'
-                  : ''
-              }`}
+        {/* Live Search Filter */}
+        <div className="relative w-full sm:w-64">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search student or roll no..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
             >
-              {/* Student Details */}
-              <div className="flex items-center space-x-3.5">
-                <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-colors ${
-                    isPresent
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                      : isAbsent
-                      ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                      : 'bg-slate-100 text-slate-600 border border-slate-200'
-                  }`}
-                >
-                  {index + 1}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900">
-                      {student.name}
-                    </span>
-                    {student.updatedAt && (
-                      <span
-                        title={`Last updated: ${new Date(student.updatedAt).toLocaleString()}`}
-                        className="inline-flex items-center text-[10px] text-slate-400"
-                      >
-                        <Clock className="w-2.5 h-2.5 mr-0.5" />
-                        Saved
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs font-mono font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                      {student.rollNumber}
-                    </span>
-                    <span
-                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                        isPresent
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : isAbsent
-                          ? 'bg-rose-50 text-rose-700'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}
-                    >
-                      {isPresent ? 'Present' : isAbsent ? 'Absent' : 'Unmarked'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Status Action Buttons */}
-              <div className="flex items-center gap-2 self-end sm:self-center">
-                {/* Present Button */}
-                <button
-                  type="button"
-                  onClick={() => onStatusChange(student.studentId, 'Present')}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
-                    isPresent
-                      ? 'bg-emerald-600 text-white shadow-emerald-200 ring-2 ring-emerald-600 ring-offset-1'
-                      : 'bg-white text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200'
-                  }`}
-                >
-                  <Check className={`w-3.5 h-3.5 ${isPresent ? 'text-white' : 'text-emerald-500'}`} />
-                  Present
-                </button>
-
-                {/* Absent Button */}
-                <button
-                  type="button"
-                  onClick={() => onStatusChange(student.studentId, 'Absent')}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
-                    isAbsent
-                      ? 'bg-rose-600 text-white shadow-rose-200 ring-2 ring-rose-600 ring-offset-1'
-                      : 'bg-white text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 hover:border-rose-200'
-                  }`}
-                >
-                  <X className={`w-3.5 h-3.5 ${isAbsent ? 'text-white' : 'text-rose-500'}`} />
-                  Absent
-                </button>
-              </div>
-            </div>
-          );
-        })}
+              ✕
+            </button>
+          )}
+        </div>
       </div>
+
+      {filteredStudents.length === 0 ? (
+        <div className="p-8 text-center text-sm text-slate-500">
+          No students match "{searchQuery}"
+        </div>
+      ) : (
+        <div className="divide-y divide-slate-100">
+          {filteredStudents.map((student, index) => {
+            const isPresent = student.status === 'Present';
+            const isAbsent = student.status === 'Absent';
+
+            return (
+              <div
+                key={student.studentId}
+                className={`p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors hover:bg-slate-50/70 ${
+                  isPresent
+                    ? 'bg-emerald-50/20'
+                    : isAbsent
+                    ? 'bg-rose-50/20'
+                    : ''
+                }`}
+              >
+                {/* Student Details */}
+                <div className="flex items-center space-x-3.5">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-colors ${
+                      isPresent
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                        : isAbsent
+                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                        : 'bg-slate-100 text-slate-600 border border-slate-200'
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-slate-900">
+                        {student.name}
+                      </span>
+                      {student.updatedAt && (
+                        <span
+                          title={`Last updated: ${new Date(student.updatedAt).toLocaleString()}`}
+                          className="inline-flex items-center text-[10px] text-slate-400"
+                        >
+                          <Clock className="w-2.5 h-2.5 mr-0.5" />
+                          Saved
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs font-mono font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                        {student.rollNumber}
+                      </span>
+                      <span
+                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                          isPresent
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : isAbsent
+                            ? 'bg-rose-50 text-rose-700'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        {isPresent ? 'Present' : isAbsent ? 'Absent' : 'Unmarked'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Action Buttons */}
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  {/* Present Button */}
+                  <button
+                    type="button"
+                    onClick={() => onStatusChange(student.studentId, 'Present')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+                      isPresent
+                        ? 'bg-emerald-600 text-white shadow-emerald-200 ring-2 ring-emerald-600 ring-offset-1'
+                        : 'bg-white text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200'
+                    }`}
+                  >
+                    <Check
+                      className={`w-3.5 h-3.5 ${isPresent ? 'text-white' : 'text-emerald-500'}`}
+                    />
+                    Present
+                  </button>
+
+                  {/* Absent Button */}
+                  <button
+                    type="button"
+                    onClick={() => onStatusChange(student.studentId, 'Absent')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+                      isAbsent
+                        ? 'bg-rose-600 text-white shadow-rose-200 ring-2 ring-rose-600 ring-offset-1'
+                        : 'bg-white text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 hover:border-rose-200'
+                    }`}
+                  >
+                    <X
+                      className={`w-3.5 h-3.5 ${isAbsent ? 'text-white' : 'text-rose-500'}`}
+                    />
+                    Absent
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

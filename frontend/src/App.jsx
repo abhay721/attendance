@@ -123,6 +123,16 @@ export default function App() {
     );
   };
 
+  // Quick Action: Mark All Absent
+  const handleMarkAllAbsent = () => {
+    setStudents((prev) =>
+      prev.map((s) => ({
+        ...s,
+        status: 'Absent',
+      }))
+    );
+  };
+
   // Quick Action: Clear Selection
   const handleClearSelection = () => {
     setStudents((prev) =>
@@ -229,6 +239,7 @@ export default function App() {
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
           onMarkAllPresent={handleMarkAllPresent}
+          onMarkAllAbsent={handleMarkAllAbsent}
           onClearSelection={handleClearSelection}
           onSave={handleSaveAttendance}
           isSaving={isSaving}
