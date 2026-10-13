@@ -1,0 +1,29 @@
+# Dependency directories
+node_modules/
+*/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!*.example
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Database persistence files
+.pglite_data/
+backend/.pglite_data/
+*.sqlite
+*.sqlite3
+
+# Logs and system files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
